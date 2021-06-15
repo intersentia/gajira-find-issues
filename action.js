@@ -6,7 +6,7 @@ const issueIdRegEx = /([a-zA-Z0-9]+-[0-9]+)/g
 const eventTemplates = {
   branch: '{{event.ref}}',
   commits: "{{event.commits.map(c=>c.message).join(' ')}}",
-  pullrequest: "{{event.pull_request.head.ref}}"
+  pullrequest: '{{event.pull_request.head.ref}}',
 }
 
 module.exports = class {
@@ -24,9 +24,9 @@ module.exports = class {
 
   async execute () {
     if (this.argv.string) {
-      const foundIssue = await this.findIssueKeyIn(this.argv.string)
+      const foundIssues = await this.findIssuesKeyIn(this.argv.string)
 
-      if (foundIssue) return foundIssue
+      if (foundIssues) return foundIssues
     }
 
     if (this.argv.from) {
@@ -34,14 +34,14 @@ module.exports = class {
 
       if (template) {
         const searchStr = this.preprocessString(template)
-        const foundIssue = await this.findIssueKeyIn(searchStr)
+        const foundIssues = await this.findIssuesKeyIn(searchStr)
 
-        if (foundIssue) return foundIssue
+        if (foundIssues) return foundIssues
       }
     }
   }
 
-  async findIssueKeyIn (searchStr) {
+  async findIssuesKeyIn (searchStr) {
     const match = searchStr.match(issueIdRegEx)
 
     console.log(`Searching in string: \n ${searchStr}`)
@@ -51,14 +51,17 @@ module.exports = class {
 
       return
     }
+    const results = []
 
     for (const issueKey of match) {
       const issue = await this.Jira.getIssue(issueKey)
 
       if (issue) {
-        return { issue: issue.key }
+        results.push({ issue: issue.key })
       }
     }
+
+    return results
   }
 
   preprocessString (str) {
