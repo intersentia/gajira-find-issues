@@ -61,7 +61,7 @@ module.exports = class {
       }
     }
 
-    return results
+    return _.uniq(results)
   }
 
   preprocessString (str) {
