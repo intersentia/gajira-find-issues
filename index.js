@@ -1,6 +1,7 @@
 const fs = require('fs')
 const YAML = require('yaml')
 const core = require('@actions/core')
+const _ = require('lodash')
 
 const cliConfigPath = `${process.env.HOME}/.jira.d/config.yml`
 const configPath = `${process.env.HOME}/jira/config.yml`
@@ -12,22 +13,22 @@ const config = YAML.parse(fs.readFileSync(configPath, 'utf8'))
 
 async function exec () {
   try {
-    const result = await new Action({
+    const results = await new Action({
       githubEvent,
       argv: parseArgs(),
       config,
     }).execute()
 
-    if (result) {
-      console.log(`Detected issueKey: ${result.issue}`)
-      console.log(`Saving ${result.issue} to ${cliConfigPath}`)
-      console.log(`Saving ${result.issue} to ${configPath}`)
+    if (results && !_.isEmpty(results)) {
+      console.log(`Detected issues: ${results.map(i => i.issue).join(',')}`)
+      console.log(`Saving issues to ${cliConfigPath}`)
+      console.log(`Saving issues to ${configPath}`)
 
       // Expose created issue's key as an output
-      core.setOutput('issue', result.issue)
+      core.setOutput('issues', results)
 
-      const yamledResult = YAML.stringify(result)
-      const extendedConfig = Object.assign({}, config, result)
+      const yamledResult = YAML.stringify(results)
+      const extendedConfig = Object.assign({}, config, results)
 
       fs.writeFileSync(configPath, YAML.stringify(extendedConfig))
 
