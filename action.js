@@ -6,7 +6,7 @@ const issueIdRegEx = /([a-zA-Z0-9]+-[0-9]+)/g
 const eventTemplates = {
   branch: '{{event.ref}}',
   commits: "{{event.commits.map(c=>c.message).join(' ')}}",
-  pullrequest: '{{event.pull_request.head.ref}}',
+  pullrequest: '{{event.pull_request.title}}',
 }
 
 module.exports = class {
