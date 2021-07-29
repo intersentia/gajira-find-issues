@@ -20,10 +20,9 @@ async function exec () {
     }).execute()
 
     if (results && !_.isEmpty(results)) {
-      console.log(`Detected issues: ${results.map(i => i.issue).join(',')}`)
+      console.log(`Detected issues: ${results}`)
       console.log(`Saving issues to ${cliConfigPath}`)
       console.log(`Saving issues to ${configPath}`)
-
       // Expose created issue's key as an output
       core.setOutput('issues', results)
 
