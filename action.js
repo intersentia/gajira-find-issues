@@ -57,7 +57,7 @@ module.exports = class {
       const issue = await this.Jira.getIssue(issueKey)
 
       if (issue) {
-        results.push({ issue: issue.key })
+        results.push(issue.key)
       }
     }
 
